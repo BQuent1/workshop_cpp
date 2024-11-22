@@ -6,17 +6,20 @@
 #include "random.hpp"
 #include <complex>
 #include <glm/gtx/matrix_transform_2d.hpp>
+#include <vector>
 
 #include <cerrno>
 #include <cfenv>
 
-void keep_green_only(sil::Image &image) // Prend l'image par référence pour pouvoir la modifier
+void keep_green_only(sil::Image &image)
 {
     for (glm::vec3 &color : image.pixels())
     {
         color.r = 0.f;
         color.b = 0.f;
     }
+
+    image.save("output/output_off/volf_vert.png");
 }
 
 void swap_canaux(sil::Image &img)
@@ -27,6 +30,7 @@ void swap_canaux(sil::Image &img)
         color.b = color.r;
         color.r = temp;
     }
+    img.save("output/output_off/volf_swap.png");
 }
 
 void negatif(sil::Image &img)
@@ -35,9 +39,11 @@ void negatif(sil::Image &img)
     {
         color = 1.f - color;
     }
+
+    img.save("output/output_off/volf_negatif.png");
 }
 
-void les_noirs_sont_beaux(sil::Image &img)
+void noir_blanc(sil::Image &img)
 {
     for (int x = 0; x < img.width(); x++)
     {
@@ -48,26 +54,24 @@ void les_noirs_sont_beaux(sil::Image &img)
         }
     }
 
-    img.save("output/pouet.png");
+    img.save("output/output_off/volf_noir_et_blanc.png");
 }
 
 void degrade()
 {
     sil::Image image{300 /*width*/, 200 /*height*/};
+
     for (int x{0}; x < image.width(); x++)
     {
         for (int y{0}; y < image.height(); y++)
         {
+            float valeur = static_cast<float>(x) / static_cast<float>(image.width() - 1);
 
-            // std::cout << image.pixel(x,y).r << "         ";
-            float truc{x / image.width()};
-            std::cout << truc << "      ";
-            image.pixel(x, y).r = 0.61;
-            image.pixel(x, y).g = x / image.width() - 1;
-            image.pixel(x, y).b = x / image.width() - 1;
+            image.pixel(x, y).r = image.pixel(x, y).g = image.pixel(x, y).b = valeur;
         }
     }
-    image.save("output/pouet.png");
+
+    image.save("output/output_off/degrade.png");
 }
 
 void symetrie_axial_verticale(sil::Image &img)
@@ -81,6 +85,8 @@ void symetrie_axial_verticale(sil::Image &img)
             img.pixel(x, y).g = img.pixel(img.width() - (x + 1), y).g;
         }
     }
+
+    img.save("output/output_off/volf_symetrie_verticale.png");
 }
 
 void symetrie_axial_horizontale(sil::Image &img)
@@ -94,6 +100,8 @@ void symetrie_axial_horizontale(sil::Image &img)
             img.pixel(x, y).g = img.pixel(x, img.height() - (y + 1)).g;
         }
     }
+
+    img.save("output/output_off/volf_symetrie_horizontale.png");
 }
 
 void miroir(sil::Image &img)
@@ -108,22 +116,28 @@ void miroir(sil::Image &img)
             img.pixel(x, y).g = newImg.pixel(img.width() - (x + 1), y).g;
         }
     }
+
+    img.save("output/output_off/volf_miroir.png");
 }
 
 void rotation90(sil::Image &image)
 {
     sil::Image newImg{image.height(), image.width()};
+    
     for (int x{0}; x < image.width(); x++)
     {
         for (int y{0}; y < image.height(); y++)
         {
-            newImg.pixel(y, x).r = image.pixel(x, y).r;
-            newImg.pixel(y, x).b = image.pixel(x, y).b;
-            newImg.pixel(y, x).g = image.pixel(x, y).g;
+            int newX = image.height() - 1 - y;
+            int newY = x;
+
+            newImg.pixel(newX, newY).r = image.pixel(x, y).r;
+            newImg.pixel(newX, newY).g = image.pixel(x, y).g;
+            newImg.pixel(newX, newY).b = image.pixel(x, y).b;
         }
     }
 
-    newImg.save("output/pouet.png");
+    newImg.save("output/output_off/volf_tourne_la_tete.png");
 }
 
 void rgbsplit(sil::Image image)
@@ -144,7 +158,7 @@ void rgbsplit(sil::Image image)
             }
         }
     }
-    newImg.save("output/pouet.png");
+    newImg.save("output/output_off/volf_plein_de_couleurs.png");
 }
 
 void luminosite(sil::Image &image)
@@ -153,13 +167,13 @@ void luminosite(sil::Image &image)
     {
         for (int y{0}; y < image.height(); y++)
         {
-            image.pixel(x, y).r = std::pow(image.pixel(x, y).r, 0.7f);
-            image.pixel(x, y).g = std::pow(image.pixel(x, y).g, 0.7f);
-            image.pixel(x, y).b = std::pow(image.pixel(x, y).b, 0.7f);
+            image.pixel(x, y).r = std::pow(image.pixel(x, y).r, 1.2f);
+            image.pixel(x, y).g = std::pow(image.pixel(x, y).g, 1.2f);
+            image.pixel(x, y).b = std::pow(image.pixel(x, y).b, 1.2f);
         }
     }
 
-    image.save("output/pouet.png");
+    image.save("output/output_off/volf_plus_fonce.png");
 }
 
 void disque(int rayon, int xcentre, int ycentre, int num)
@@ -191,11 +205,12 @@ void cercle(int thickness)
         {
             if (std::pow(x - xcentre, 2) + std::pow(y - ycentre, 2) <= std::pow(rayon, 2) and std::pow(x - xcentre, 2) + std::pow(y - ycentre, 2) >= std::pow(rayon - thickness, 2))
             {
-                image.pixel(x, y).r = image.pixel(x, y).b = image.pixel(x, y).g = 0.2f;
+                image.pixel(x, y).r = 0.8f;
+                image.pixel(x, y).b = image.pixel(x, y).g = 0.2f;
             }
         }
     }
-    image.save("output/pouet.png");
+    image.save("output/output_off/juste_un_cercle.png");
 }
 
 void cercle_rosace(int thickness, sil::Image &img, int rayon, int xcentre, int ycentre)
@@ -207,7 +222,8 @@ void cercle_rosace(int thickness, sil::Image &img, int rayon, int xcentre, int y
             if (std::pow(x - xcentre, 2) + std::pow(y - ycentre, 2) <= std::pow(rayon, 2) and std::pow(x - xcentre, 2) + std::pow(y - ycentre, 2) >= std::pow(rayon - thickness, 2))
             {
                 // std::cout << "here\n";
-                img.pixel(x, y).r = img.pixel(x, y).b = img.pixel(x, y).g = 1.f;
+                img.pixel(x, y).r = 0.8f;
+                img.pixel(x, y).b = img.pixel(x, y).g = 0.2f;
             }
         }
     }
@@ -228,7 +244,7 @@ void rosace(int thickness, int rayon)
     {
         cercle_rosace(thickness, image, rayon, image.width() / 2 + rayon * std::cos(i * pi / 3), image.width() / 2 + rayon * std::sin(i * pi / 3));
     }
-    image.save("output/pouet.png");
+    image.save("output/output_off/belle_rosace.png");
 }
 
 void mosaique(sil::Image &img, int nb_image)
@@ -253,7 +269,7 @@ void mosaique(sil::Image &img, int nb_image)
         }
     }
 
-    newImg.save("output/pouet.png");
+    newImg.save("output/output_off/volf_plein_de_fois.png");
 }
 
 void mosaique_miroir(sil::Image &img, int nb_image)
@@ -292,7 +308,7 @@ void mosaique_miroir(sil::Image &img, int nb_image)
         }
     }
 
-    newImg.save("output/pouet.png");
+    newImg.save("output/output_off/volf_plein_de_fois_mais_de_maniere_rigolote.png");
 }
 
 void glitch(sil::Image &img)
@@ -301,7 +317,7 @@ void glitch(sil::Image &img)
     {
         for (int y = 0; y < img.height(); y++)
         {
-            if (true_with_probability(0.001f))
+            if (true_with_probability(0.0003f))
             {
                 int longueur_rec = random_int(10, 40);
                 int largeur_rec = random_int(3, 10);
@@ -333,7 +349,7 @@ void glitch(sil::Image &img)
         }
     }
 
-    img.save("output/pouet.png");
+    img.save("output/output_off/volf_ca_gresille.png");
 }
 
 void mandelbrot()
@@ -368,7 +384,7 @@ void mandelbrot()
             }
         }
     }
-    image.save("output/pouet.png");
+    image.save("output/output_off/pain_d_amande.png");
 }
 
 void tramage(sil::Image img, float bayer_r, int i)
@@ -421,8 +437,8 @@ void vortex(sil::Image &img)
         for (int y = 0; y < img.height(); y++)
         {
             glm::vec2 point(x, y);
-            int distance {glm::distance(centre, point)};
-            float angle = 0.006*distance;
+            int distance{glm::distance(centre, point)};
+            float angle = 0.006 * distance;
 
             glm::vec2 rotatedPoint = rotated(point, centre, angle);
             // std::cout << rotatedPoint.x << rotatedPoint.y << " , \n";
@@ -440,20 +456,58 @@ void vortex(sil::Image &img)
         }
     }
 
-    img.save("output/pouet.png");
+    img.save("output/output_off/volf_bourre.png");
 }
 
-
-void convolution(sil::Image img, <vector> kernel){
-
+float clamp(float value, float min, float max)
+{
+    return std::max(min, std::min(value, max));
 }
 
+void convolution(sil::Image &img, const std::vector<std::vector<float>> &kernel)
+{
+    sil::Image result = img;
 
+    int kernel_size = kernel.size();
+    std::cout << kernel_size;
+    int offset = kernel_size / 2; // Déplacement pour correspondre au centre du noyau
+
+    for (int x = offset; x < img.width() - offset; x++)
+    {
+        for (int y = offset; y < img.height() - offset; y++)
+        {
+            float const_r = 0.f;
+            float const_g = 0.f;
+            float const_b = 0.f;
+
+            for (int i = -offset; i <= offset; i++)
+            {
+                for (int j = -offset; j <= offset; j++)
+                {
+                    float poid = kernel[i + offset][j + offset];
+
+                    const_r += poid * img.pixel(x + i, y + j).r;
+                    const_g += poid * img.pixel(x + i, y + j).g;
+                    const_b += poid * img.pixel(x + i, y + j).b;
+                }
+            }
+
+            result.pixel(x, y).r = clamp(const_r, 0.f, 255.f); // Clamp pour éviter les débordements
+            result.pixel(x, y).g = clamp(const_g, 0.f, 255.f);
+            result.pixel(x, y).b = clamp(const_b, 0.f, 255.f);
+        }
+    }
+
+    result.save("output/output_off/volf_gravure_sur_pierre.png");
+}
+
+std::vector<std::vector<float>> blur_vec = {{0.0625f, 0.125f, 0.0625f}, {0.125f, 0.25f, 0.125f}, {0.0625f, 0.125f, 0.0625f}};
+std::vector<std::vector<float>> outline_vec = {{-1.f, -1.f, -1.f}, {-1.f, 8, -1.f}, {-1.f, -1.f, -1.f}};
+std::vector<std::vector<float>> emboss_vec = {{-2.f, -1.f, 0.f}, {-1.f, 1.f, 1.f}, {0.f, 1.f, 2.f}};
 
 int main()
 {
-    sil::Image volf_img{"images/volf_moche.png"};
-    vortex(volf_img);
-
+    sil::Image volf_img{"images/volf_officiel.png"};
+    convolution(volf_img,emboss_vec);
     return 0;
 }
