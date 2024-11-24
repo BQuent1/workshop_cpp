@@ -251,11 +251,10 @@ void mosaique(sil::Image &img, int nb_image)
 {
     sil::Image newImg{nb_image * img.width(), nb_image * img.height()};
 
-    // Parcourir chaque "bloc" de la mosaïque
     for (int i = 0; i < nb_image; ++i)
-    { // Parcourir les colonnes de mosaïque
+    {
         for (int j = 0; j < nb_image; ++j)
-        { // Parcourir les lignes de mosaïque
+        {
             for (int xi = 0; xi < img.width(); ++xi)
             {
                 for (int yi = 0; yi < img.height(); ++yi)
@@ -276,7 +275,6 @@ void mosaique_miroir(sil::Image &img, int nb_image)
 {
     sil::Image newImg{nb_image * img.width(), nb_image * img.height()};
 
-    // Parcourir chaque "bloc" de la mosaïque
     for (int i = 0; i < nb_image; ++i)
     {
         for (int j = 0; j < nb_image; ++j)
@@ -290,15 +288,15 @@ void mosaique_miroir(sil::Image &img, int nb_image)
                     int sourceY = yi;
 
                     if (i % 2 == 1)
-                    { // Miroir horizontal pour colonnes impaires
+                    {
                         sourceX = img.width() - 1 - xi;
                     }
                     if (j % 2 == 1)
-                    { // Miroir vertical pour lignes impaires
+                    { 
                         sourceY = img.height() - 1 - yi;
                     }
 
-                    // Calculer les indices cibles dans la mosaïque
+                    
                     int targetX = i * img.width() + xi;
                     int targetY = j * img.height() + yi;
 
@@ -508,6 +506,6 @@ std::vector<std::vector<float>> emboss_vec = {{-2.f, -1.f, 0.f}, {-1.f, 1.f, 1.f
 int main()
 {
     sil::Image volf_img{"images/volf_officiel.png"};
-    convolution(volf_img,emboss_vec);
+    swap_canaux(volf_img);
     return 0;
 }
