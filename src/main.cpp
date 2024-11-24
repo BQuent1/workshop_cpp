@@ -506,6 +506,6 @@ std::vector<std::vector<float>> emboss_vec = {{-2.f, -1.f, 0.f}, {-1.f, 1.f, 1.f
 int main()
 {
     sil::Image volf_img{"images/volf_officiel.png"};
-    swap_canaux(volf_img);
+    symetrie_axial_verticale(volf_img);
     return 0;
 }

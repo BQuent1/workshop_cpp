@@ -6,6 +6,32 @@ Regarde comme il est beau :
 ![image](images/volf_officiel.png)
 ![image](images/volf_moche.png)
 
+# Table des matières
+
+- [🐣 S1 | Prog: Workshop](#-s1--prog-workshop)
+- [Table des matières](#table-des-matières)
+  - [Exercice QUE DU VERT](#exercice-que-du-vert)
+  - [Exercice ECHANGER LES CANAUX](#exercice-echanger-les-canaux)
+  - [Exercice NOIR ET BLANC](#exercice-noir-et-blanc)
+  - [Exercice NEGATIF](#exercice-negatif)
+  - [Exercice DEGRADE](#exercice-degrade)
+  - [Exercice MIROIR](#exercice-miroir)
+  - [Exercice SYMETRIE :](#exercice-symetrie-)
+  - [Exercice ROTATION 90 :](#exercice-rotation-90-)
+  - [Exercice RGB split](#exercice-rgb-split)
+  - [Exercice LUMINOSITE](#exercice-luminosite)
+  - [Exercice DISQUE](#exercice-disque)
+  - [Exercice CERCLE](#exercice-cercle)
+  - [Exercice ROSACE](#exercice-rosace)
+  - [Exercice MOSAIQUE](#exercice-mosaique)
+      - [Exercice MOSAÏQUE](#exercice-mosaïque)
+  - [Exercice GLITCH](#exercice-glitch)
+  - [Exercice FRACTALE DE MANDELBROT](#exercice-fractale-de-mandelbrot)
+  - [Exercice FRACTALE DE MANDELBROT](#exercice-fractale-de-mandelbrot-1)
+  - [Exercice VORTEX](#exercice-vortex)
+  - [Exercice CONVOLUTIONS](#exercice-convolutions)
+
+
 
 ## Exercice QUE DU VERT
 
@@ -148,6 +174,56 @@ void miroir(sil::Image &img)
 
 Résultat :
 ![image](output/output_off/volf_miroir.png)
+
+
+## Exercice SYMETRIE :
+
+En essayant l'exercice miroir, je me suis trompé, cela à créer une symétrie axial verticale. J'ai également fait une symétrie axial horizontal puis les deux combinés.
+
+```cpp
+void symetrie_axial_verticale(sil::Image &img)
+{
+    for (int x{0}; x < img.width(); x++)
+    {
+        for (int y{0}; y < img.height(); y++)
+        {
+            img.pixel(x, y).r = img.pixel(img.width() - (x + 1), y).r;
+            img.pixel(x, y).b = img.pixel(img.width() - (x + 1), y).b;
+            img.pixel(x, y).g = img.pixel(img.width() - (x + 1), y).g;
+        }
+    }
+
+    img.save("output/output_off/volf_symetrie_verticale.png");
+}
+
+void symetrie_axial_horizontale(sil::Image &img)
+{
+    for (int x{0}; x < img.width(); x++)
+    {
+        for (int y{0}; y < img.height(); y++)
+        {
+            img.pixel(x, y).r = img.pixel(x, img.height() - (y + 1)).r;
+            img.pixel(x, y).b = img.pixel(x, img.height() - (y + 1)).b;
+            img.pixel(x, y).g = img.pixel(x, img.height() - (y + 1)).g;
+        }
+    }
+
+    img.save("output/output_off/volf_symetrie_horizontale.png");
+}
+
+```
+
+Symétrie vertical :
+![image](output/output_off/volf_tu_louches.png)
+
+
+Symétrie horizontale :
+![image](output/output_off/volf_symetrie_horizontale.png)
+
+
+Combinaison :
+![image](output/output_off/volf_etoile_de_mer.png)
+
 
 
 
@@ -653,11 +729,11 @@ void convolution(sil::Image &img, const std::vector<std::vector<float>> &kernel)
 
     result.save("output/output_off/volf_gravure_sur_pierre.png");
 }
-``
+```
 
-Résultat avec un filtre 'emboss':
+Résultat avec un filtre 'emboss' :
 
-![image](output/output_off/`volf_gravure_sur_pierre`.png)
+![image](output/output_off/volf_gravure_sur_pierre.png)
 
 
 
